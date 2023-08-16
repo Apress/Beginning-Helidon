@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+        xmlns='http://www.w3.org/2000/svg'
+        width='25'
+        height='25'
+        viewBox='0 0 20 20'>
+
+    <rect fill='#2B2D30'
+          width='20'
+          height='20'/>
+
+    <g fill-opacity='0.2'>
+        <polygon
+                fill='#222426'
+                points='20 10 10 0 0 0 20 20'/>
+        <polygon fill='#222426'
+                 points='0 10 0 20 10 20'/>
+    </g>
+</svg>

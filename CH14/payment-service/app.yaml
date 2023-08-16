@@ -1,0 +1,41 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: payment-service
+  labels:
+    app: payment-service
+spec:
+  type: NodePort
+  selector:
+    app: payment-service
+  ports:
+  - port: 7002
+    targetPort: 7002
+    name: http
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: payment-service
+  labels:
+    app: payment-service
+    version: v1
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: payment-service
+      version: v1
+  template:
+    metadata:
+      labels:
+        app: payment-service
+        version: v1
+    spec:
+      containers:
+        - name: payment-service
+          image: cinema-reservation/payment-service:1.0
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 7002

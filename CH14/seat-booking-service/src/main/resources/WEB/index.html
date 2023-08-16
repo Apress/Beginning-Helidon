@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/html">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
+    <title>Online Cinema Reservation</title>
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="main.css">
+</head>
+<body>
+<h1>Helidon Cinema</h1>
+<h2>Reservation</h2>
+
+<div id="selection-view">
+    <div>
+        <img class="screen" src="images/screen.svg"/>
+    </div>
+    <div style="height: 20%"></div>
+    <table class="seat-table">
+        <tbody id="seat-table"></tbody>
+    </table>
+
+    <div id="reserve-button" class="button">Reserve seat
+        <div id="seat-num-label"></div>
+    </div>
+</div>
+
+<div id="payment-view" class="view-box">
+    <div>
+        <h2>Payment information</h2>
+        <div style="padding-bottom: 4%">Make a 20$ payment for the seat <b id="payed-seat"></b>.</div>
+        <table c>
+            <tbody>
+            <tr>
+                <td>Name:</td>
+                <td><input id="name" value="Frank"></td>
+            </tr>
+            <tr>
+                <td>Fake card number:</td>
+                <td><input id="card-number" value="0000-0000-0000"></td>
+            </tr>
+            <tr>
+                <td>Amount:</td>
+                <td><input id="amount" value="20"></td>
+            </tr>
+            </tbody>
+        </table>
+        <div id="pay-button" class="button">Pay</div>
+    </div>
+</div>
+
+<div id="error-view" class="view-box">
+    <div>
+        <h2 style="margin-top: 0px">Error</h2>
+        <div id="error-message" style="padding-bottom: 8%"></div>
+        <div id="error-button" class="button">OK</div>
+    </div>
+</div>
+
+<div id="notification-view" class="notification-box">
+    <div>
+        <div id="notification-message"></div>
+    </div>
+</div>
+
+<script>
+    const notificationView = $("#notification-view");
+    const notificationMessage = $("#notification-message");
+    const selectionView = $("#selection-view");
+    const paymentView = $("#payment-view");
+    const errorView = $("#error-view");
+    const seatTable = $("#seat-table");
+    const selectedSeat = $("#seat-num-label");
+    const reserveButton = $("#reserve-button");
+    const payButton = $("#pay-button");
+    const errorButton = $("#error-button");
+    const paidSeat = $("#paid-seat");
+    const cardNumber = $("#card-number");
+    const amount = $("#amount");
+
+    new EventSource("booking/sse-notifications").onmessage = e => this.onSSE(e.data);
+
+    notificationView.hide();
+    errorView.hide();
+    paymentView.hide();
+    reserveButton.hide();
+    reloadSeats();
+
+    errorButton.click(function () {
+        errorView.hide();
+        reloadSeats();
+        clearSelection();
+        selectionView.show();
+    });
+
+    function onSSE(json) {
+        let data = JSON.parse(json);
+        notify("Payment for reserved seat "+ data.id + " failed!")
+        clearBooking(data.id)
+    }
+
+    payButton.click(function () {
+        makePayment(cardNumber.val(), amount.val(), paymentView.attr("data-lraId"))
+        paymentView.hide();
+        reloadSeats();
+        clearSelection();
+        selectionView.show();
+    });
+
+    reserveButton.click(function () {
+        selectionView.hide();
+        createBooking(selectedSeat.html())
+            .then(res => {
+                if (res.ok) {
+                    // Notice how we can access and store LRA id even on the client side
+                    let lraId = res.headers.get("Long-Running-Action");
+                    paymentView.attr("data-lraId", lraId);
+                    paymentView.show();
+                } else {
+                    res.json().then(json => {
+                        showError(json.error);
+                    });
+                }
+            });
+    });
+
+    function showError(msg) {
+        $("#error-message").html(msg);
+        errorView.show();
+    }
+
+    function createBooking(id, name) {
+        return fetch('/booking/create/' + id, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({"name": name})
+        })
+    }
+
+    function makePayment(cardNumber, amount, lraId) {
+        return fetch('/payment-proxy/payment', {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'Long-Running-Action': lraId
+            },
+            body: JSON.stringify({"cardNumber": cardNumber, "amount": amount})
+        })
+    }
+
+    function reloadSeats() {
+        fetch('/booking/seat', {
+            method: 'GET'
+        }).then(res => {
+            return res.json();
+        }).then(seats => {
+            for (let bookedSeat of seats) {
+                let seatEl = $("#seat-" + bookedSeat.id);
+                seatEl.removeClass("free-seat");
+                seatEl.removeClass("reserved-seat");
+                seatEl.addClass("reserved-seat");
+            }
+        })
+    }
+
+    function notify(msg){
+        notificationMessage.html(msg);
+        notificationView.show().delay(3000).fadeOut();
+    }
+
+    function onSelection(id) {
+        paidSeat.html(id);
+        selectedSeat.html(id);
+        reserveButton.show();
+    }
+
+    function clearBooking(seatId) {
+        let seatEl = $("#seat-" + seatId);
+        seatEl.removeClass("reserved-seat");
+        seatEl.addClass("free-seat");
+    }
+
+    function clearSelection() {
+        reserveButton.hide();
+        $(".selected-seat").each(function () {
+            $(this).removeClass("selected-seat")
+        });
+    }
+
+    for (let row = 1; row < 5; row++) {
+        seatTable.append(`<tr id="row-${row}"></tr>`);
+        let rowEl = $("#row-" + row);
+        for (let col = 1; col < 10; col++) {
+            let seatNum = row + "" + col
+            rowEl.append(`<td class="seat-cell">
+                            <div id="seat-${seatNum}"
+                                 class="free-seat"/>
+                            <div class="seat-label">${seatNum}</div>
+                          </td>`)
+            let seatEl = $("#seat-" + seatNum);
+            seatEl.click(function () {
+                clearSelection();
+                seatEl.removeClass("selected-seat");
+                seatEl.addClass("selected-seat");
+                onSelection(seatEl.parent().find(".seat-label").text());
+            })
+        }
+    }
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,162 @@
+body {
+    background-image: url("images/background.svg");
+}
+
+html *
+{
+    font-family: FinalFrontier, monospace;
+    font-weight: lighter;
+    font-size: 110%;
+    color: cyan;
+}
+
+h1 {
+    font-size: 300%;
+    display:flex;
+    margin-bottom: 0%;
+    align-items:center;
+    justify-content:center;
+}
+
+h2 {
+    margin-top: 0%;
+    font-size: 200%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+}
+
+h3 {
+    font-size: 120%;
+}
+
+input {
+    color: #222426;
+}
+
+.screen{
+    display:flex;
+    align-items:center;
+    max-width: 70%;
+    height: auto;
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 4%;
+    justify-content:center;
+}
+
+.free-seat{
+    display:flex;
+    align-items:center;
+    max-width: 40px;
+    min-width: 40px;
+    min-height: 40px;
+    margin-left: auto;
+    margin-right: auto;
+    justify-content:center;
+    background-image: url("images/free-seat.svg");
+    background-size: 100% 100%;
+}
+
+.selected-seat{
+    opacity: 50%;
+}
+
+.reserved-seat{
+    display:flex;
+    align-items:center;
+    max-width: 40px;
+    min-width: 40px;
+    min-height: 40px;
+    margin-left: auto;
+    margin-right: auto;
+    justify-content:center;
+    background-image: url("images/reserved-seat.svg");
+    background-size: 100% 100%;
+}
+
+.seat-table{
+    display:flex;
+    align-items:center;
+    margin-left: auto;
+    margin-right: auto;
+    justify-content:center;
+}
+
+.payment-table {
+    white-space: nowrap;
+}
+
+.seat-label{
+    font-size: 80%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+}
+
+.free-seat:hover {
+    opacity: 70%;
+    cursor: pointer;
+}
+
+.button:hover {
+    opacity: 70%;
+    cursor: pointer;
+}
+
+#reserve-button {
+
+}
+
+.button {
+    font-size: 150%;
+    border-radius: 4px;
+    background-color: #222426;
+    display: flex;
+    align-items:center;
+    justify-content:center;
+    padding: 2%;
+    margin-top: 3%;
+    margin-left: 30%;
+    margin-right: 30%;
+    border-style: solid;
+}
+
+#seat-num-label {
+    margin-left: 7px;
+}
+
+.view-box {
+    background-color: #222426;
+    display: flex;
+    align-items:center;
+    justify-content:center;
+    margin-left: 15%;
+    margin-right: 15%;
+    padding: 10%;
+}
+
+.notification-box {
+    background-color: #222426;
+    display: flex;
+    align-items:center;
+    justify-content:center;
+    margin-left: 35%;
+    margin-right: 35%;
+    padding: 2%;
+}
+
+#payment-view {
+    background-color: #222426;
+    display: flex;
+    align-items:center;
+    justify-content:center;
+    margin-left: 15%;
+    margin-right: 15%;
+    padding: 10%;
+}
+
+@font-face {
+    font-family: 'FinalFrontier';
+    src: url('fonts/FinalFrontierOldStyle-8Pg.ttf')  format('truetype');
+}

@@ -1,0 +1,83 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: booking-db
+  labels:
+    app: booking-db
+spec:
+  type: NodePort
+  selector:
+    app: booking-db
+  ports:
+  - port: 3306
+    targetPort: 3306
+    name: 3306-tcp
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: booking-db
+  labels:
+    app: booking-db
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: booking-db
+  template:
+    metadata:
+      labels:
+        app: booking-db
+    spec:
+      nodeSelector:
+        kubernetes.io/os: linux
+      containers:
+        - name: booking-db
+          image: container-registry.oracle.com/mysql/community-server:latest
+          env:
+            - name: MYSQL_USER
+              value: "user"
+            - name: MYSQL_PASSWORD
+              value: "pass"
+            - name: MYSQL_ROOT_PASSWORD
+              value: "root"
+            - name: MYSQL_DATABASE
+              value: "booking-db"
+          ports:
+            - name: mysql
+              containerPort: 3306
+          volumeMounts:
+            - mountPath: /var/lib/mysql
+              name: tmp-volume
+            - mountPath: /config
+              name: mysql-client-config-volume
+          livenessProbe:
+            exec:
+              command: [ "mysql", "--defaults-extra-file=/config/mysql-client.cfg", "-h", "127.0.0.1", "-e", "SELECT 1" ]
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+          readinessProbe:
+            exec:
+              command: [ "mysql", "--defaults-extra-file=/config/mysql-client.cfg", "-h", "127.0.0.1", "-e", "SELECT 1" ]
+            initialDelaySeconds: 5
+            periodSeconds: 3
+            timeoutSeconds: 5
+      volumes:
+        - name: tmp-volume
+          emptyDir:
+            medium: Memory
+        - name: mysql-client-config-volume
+          configMap:
+            name: mysql-client-config
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mysql-client-config
+data:
+  mysql-client.cfg: |
+    [client]
+    user=user
+    password=pass

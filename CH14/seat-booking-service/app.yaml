@@ -1,0 +1,52 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: seat-booking-service
+  labels:
+    app: seat-booking-service
+spec:
+  type: NodePort
+  selector:
+    app: seat-booking-service
+  ports:
+  - port: 7001
+    targetPort: 7001
+    name: http
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: seat-booking-service
+  labels:
+    app: seat-booking-service
+    version: v1
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: seat-booking-service
+      version: v1
+  template:
+    metadata:
+      labels:
+        app: seat-booking-service
+        version: v1
+    spec:
+      containers:
+        - name: seat-booking-service
+          image: cinema-reservation/seat-booking-service:1.0
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 7001
+          readinessProbe:
+            httpGet:
+              path: /health/ready
+              port: 7001
+            initialDelaySeconds: 5
+            periodSeconds: 3
+            timeoutSeconds: 8
+      initContainers:
+        - name: init-booking-db
+          image: ghcr.io/hlesey/busybox:latest
+          command: [ 'sh', '-c', "until nc -vz booking-db 3306; do echo waiting for booking-db; sleep 1; done" ]
