@@ -1,0 +1,59 @@
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
+    <title>Kingdom Castle with OIDC</title>
+    <link rel="stylesheet" type="text/css" href="main.css">
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+    <script type="text/javascript" src="main.js"></script>
+</head>
+<body>
+<div id="cover">
+    <div id="alert" class="reveal-modal">
+        <div id="error-title">Error</div>
+        <p><div id="error-msg"></div></p>
+        <button onclick="$('div#cover').hide(); $('div#canvas').removeClass('blurred');">Close</button>
+    </div>
+</div>
+<div id="canvas"
+     style="display: flex; text-align: -webkit-right;min-height: 100%;">
+    <div style="text-align: -webkit-left; width: 30%">
+        <div style="display: block; text-align: -webkit-left;">
+            <div id="label">Not logged in ...</div>
+            <p/>
+            <button onclick="login()">Login</button>
+            <button onclick="logout()">Logout</button>
+        </div>
+        <div style="display: inline-block">
+            <div style="display: inline-block">
+                <button class="ctrl" onclick="controlGate('open')">Open Gate</button>
+                <button class="ctrl" onclick="controlGate('close')">Close Gate</button>
+            </div>
+            <div style="display: inline-block">
+                <button class="ctrl" onclick="controlFlag('raise')">Raise Flag</button>
+                <button class="ctrl" onclick="controlFlag('hide')">Hide Flag</button>
+            </div>
+            <div style=" height: 10%">
+            </div>
+            <table>
+                <tr>
+                    <th>Name</th><th>User</th><th>Password</th><th>Roles</th>
+                </tr>
+                <tr>
+                    <td>Gyles Fraffolk</td><td>gyles</td><td>gyles</td><td>gate-keeper</td>
+                </tr>
+                <tr>
+                    <td>Alad Keo</td><td>alad</td><td>alad</td><td>flag-keeper</td>
+                </tr>
+                <tr>
+                    <td>Joel Driffin</td><td>joel</td><td>joel</td><td>warden</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+    <div style="width: 80%"></div>
+    <div id="svg-wrapper">
+    </div>
+</div>
+</body>
+</html>

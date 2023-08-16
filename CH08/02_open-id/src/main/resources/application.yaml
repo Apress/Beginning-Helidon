@@ -1,0 +1,26 @@
+server:
+  port: 8080
+  host: 0.0.0.0
+  static.classpath:
+    location: /WEB-INF
+    welcome: index.html
+
+keycloak:
+  host: localhost
+  port: 8979
+
+security:
+  providers:
+    # Add ABAC Provider
+    - abac:
+    - oidc:
+        audience: "kingdom-audience"
+        client-id: "beginning-helidon-client"
+        header-use: false
+        redirect: true
+        # Client secret is updated by startKeycloak.sh
+        client-secret: 9rnQEI3gV6FuBMk41UeYqYfNlCutgaN1
+        identity-uri: "http://${keycloak.host}:${keycloak.port}/realms/beginning-helidon"
+        frontend-uri: "http://localhost:${server.port}"
+        logout-enabled: true
+        post-logout-uri: /

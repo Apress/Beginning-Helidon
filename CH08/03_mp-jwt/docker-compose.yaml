@@ -1,0 +1,38 @@
+services:
+  keycloak.local:
+    build: ../keycloak
+    image: kingdom/keycloak:latest
+    healthcheck:
+      test: curl --fail localhost:8979/health/ready || exit 1
+      interval: 5s
+      retries: 30
+    ports:
+      - "8979:8979"
+    expose:
+      - "8979"
+
+  castle.local:
+    build: castle-jwt
+    image: kingdom/castle-jwt-service
+    environment:
+      KEYCLOAK_HOST: keycloak.local
+      APP_WATCHTOWER_URL: http://watchtower.local:8082/watchtower
+      APP_CASTLE_URL: http://castle.local:8080
+    ports:
+      - "8080:8080"
+    depends_on:
+      keycloak.local:
+        condition: service_healthy
+
+  watchtower.local:
+    build: watchtower-jwt
+    image: kingdom/watchtower-jwt-service
+    environment:
+      KEYCLOAK_HOST: keycloak.local
+    ports:
+      - "8082:8082"
+    expose:
+      - "8082"
+    depends_on:
+      keycloak.local:
+        condition: service_healthy

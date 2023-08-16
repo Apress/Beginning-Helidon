@@ -1,0 +1,32 @@
+server:
+  port: 8080
+  host: 0.0.0.0
+  static.classpath:
+    location: /WEB-INF
+    welcome: index.html
+
+app:
+  watchtower-url: http://localhost:8082/watchtower
+  castle-url: "http://localhost:${server.port}"
+
+keycloak:
+  host: localhost
+  port: 8979
+
+security:
+  providers:
+    - abac:
+    - oidc:
+        audience: "kingdom-audience"
+        client-id: "beginning-helidon-client"
+        redirect: true
+        # Client secret is printed out by setupKeycloak.sh
+        client-secret: 9rnQEI3gV6FuBMk41UeYqYfNlCutgaN1
+        identity-uri: "http://${keycloak.host}:${keycloak.port}/realms/beginning-helidon"
+        frontend-uri: "${app.castle-url}"
+        post-logout-uri: /
+        logout-enabled: true
+        propagate: true
+        outbound:
+          - name: "propagate-token"
+            hosts: ["watchtower.local"]

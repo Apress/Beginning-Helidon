@@ -1,0 +1,22 @@
+server:
+  port: 8082
+  host: 0.0.0.0
+  static.classpath:
+    location: /WEB-INF
+    welcome: index.html
+
+keycloak:
+  host: localhost
+  port: 8979
+
+mp.jwt.verify:
+  issuer: "http://${keycloak.host}:${keycloak.port}/realms/beginning-helidon"
+  publickey:
+    # Load public key from Keycloak
+    location: ${mp.jwt.verify.issuer}/protocol/openid-connect/certs
+
+cors:
+  # Anyone can register SSE lookout for watchtower signaling back
+  - path-prefix: /watchtower/register
+    allow-origins: ["*"]
+    allow-methods: ["GET"]

@@ -1,0 +1,22 @@
+server:
+  port: 8080
+  host: 0.0.0.0
+  tls.private-key.keystore:
+    resource.resource-path: server.p12
+    passphrase: password
+
+security:
+  providers:
+    - abac:
+    - http-basic-auth:
+        realm: "beginning-helidon"
+        users:
+          - login: "gyles"
+            password: "gyles"
+            roles: ["gate-keeper"]
+          - login: "alad"
+            password: "alad"
+            roles: ["flag-keeper"]
+          - login: "joel"
+            password: "joel"
+            roles: ["warden"]
