@@ -1,0 +1,11 @@
+coherence:
+  cluster: spells
+  role: HelidonApp
+  serializer: java
+  metrics:
+    http:
+      port: 7002
+  proxy:
+    enabled: false
+  topic:
+    enabled: false

@@ -1,0 +1,5 @@
+io.helidon.book.ch11scheduling.ScheduledTasks.configuredFixedRate:
+  schedule:
+    initial-delay: 10
+    delay: 10
+    time-unit: MINUTES
